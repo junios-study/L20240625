@@ -4,6 +4,8 @@
 #include "MyCharacter.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
 
 // Sets default values
 AMyCharacter::AMyCharacter()
@@ -36,6 +38,23 @@ void AMyCharacter::Tick(float DeltaTime)
 void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	UEnhancedInputComponent* EIC = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+	if (EIC)
+	{
+		EIC->BindAction(IA_Forward, ETriggerEvent::Triggered, this, &AMyCharacter::Move);
+		EIC->BindAction(IA_MyJump, ETriggerEvent::Triggered, this, &AMyCharacter::Jump);
+	}
+
+}
+
+void AMyCharacter::Move(const FInputActionValue& Value)
+{
+	float Forward = Value.Get<float>();
+
+	AddMovementInput(
+		GetActorForwardVector() * Forward
+	);
 
 }
 
