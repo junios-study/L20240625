@@ -17,6 +17,8 @@ class L20240625_API AMyPlayerController : public APlayerController
 public:
 	virtual void BeginPlay() override;
 
+	virtual void OnPossess(APawn* aPawn) override;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
 	TObjectPtr<class UInputMappingContext> InputMappingContext;
 

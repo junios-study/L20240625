@@ -50,10 +50,14 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void AMyCharacter::Move(const FInputActionValue& Value)
 {
-	float Forward = Value.Get<float>();
+	FVector2D Direction = Value.Get<FVector2D>();
 
 	AddMovementInput(
-		GetActorForwardVector() * Forward
+		GetActorForwardVector() * Direction.X
+	);
+
+	AddMovementInput(
+		GetActorRightVector() * Direction.Y
 	);
 
 }

@@ -8,11 +8,15 @@
 void AMyPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void AMyPlayerController::OnPossess(APawn* aPawn)
+{
+	Super::OnPossess(aPawn);
 
 	if (InputMappingContext)
 	{
 		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer())->AddMappingContext(InputMappingContext, 0);
 	}
-		
 
 }
