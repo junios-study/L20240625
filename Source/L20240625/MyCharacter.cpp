@@ -6,6 +6,8 @@
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AMyCharacter::AMyCharacter()
@@ -44,6 +46,10 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	{
 		EIC->BindAction(IA_Forward, ETriggerEvent::Triggered, this, &AMyCharacter::Move);
 		EIC->BindAction(IA_MyJump, ETriggerEvent::Triggered, this, &AMyCharacter::Jump);
+
+		EIC->BindAction(IA_Look, ETriggerEvent::Triggered, this, &AMyCharacter::Look);
+
+		EIC->BindAction(IA_Zoom, ETriggerEvent::Triggered, this, &AMyCharacter::Zoom);
 	}
 
 }
@@ -52,13 +58,39 @@ void AMyCharacter::Move(const FInputActionValue& Value)
 {
 	FVector2D Direction = Value.Get<FVector2D>();
 
+	FRotator DesireRotation = FRotator(0, GetControlRotation().Yaw, 0);
+
+	FVector DesireForward = UKismetMathLibrary::GetForwardVector(DesireRotation);
+	FVector DesireRight = UKismetMathLibrary::GetRightVector(DesireRotation);
+
+
 	AddMovementInput(
-		GetActorForwardVector() * Direction.X
+		DesireForward * Direction.X
 	);
 
 	AddMovementInput(
-		GetActorRightVector() * Direction.Y
+		DesireRight * Direction.Y
 	);
 
+}
+
+void AMyCharacter::Look(const FInputActionValue& Value)
+{
+	FVector2D Rotation = Value.Get<FVector2D>();
+
+	//AddControllerRollInput(Rotation.X);
+	AddControllerYawInput(Rotation.X);
+	AddControllerPitchInput(Rotation.Y);
+}
+
+void AMyCharacter::Zoom(const FInputActionValue& Value)
+{
+	float ZoomDepth = Value.Get<float>();
+
+	float NewTargetLength = CameraBoom->TargetArmLength + (ZoomDepth * -500.0f);
+
+	CameraBoom->TargetArmLength = FMath::FInterpTo(CameraBoom->TargetArmLength, NewTargetLength, UGameplayStatics::GetWorldDeltaSeconds(GetWorld()), 1.0f);
+
+	CameraBoom->TargetArmLength = FMath::Clamp(CameraBoom->TargetArmLength, 40.0f, 600.0f);
 }
 

@@ -14,9 +14,10 @@ void AMyPlayerController::OnPossess(APawn* aPawn)
 {
 	Super::OnPossess(aPawn);
 
+	UE_LOG(LogTemp, Warning, TEXT("Possess"));
+
 	if (InputMappingContext)
 	{
 		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer())->AddMappingContext(InputMappingContext, 0);
 	}
-
 }
